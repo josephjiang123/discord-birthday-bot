@@ -3,18 +3,20 @@ from datetime import datetime, timedelta
 import os
 import asyncio
 import discord
-
-BOT_TOKEN = "MTIwNDU1NDYyNTY1OTgzMDM5Mw.GXZjVo.yiSDPVGODROkghiGB_iSq5lAvI7FIpA-D07nrk"
-CHANNEL_ID = 1204579819359043606
+from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 intents.message_content = True
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print("Hello! Ur the best")
     called_once_a_day_at_midnight.start()
     channel = bot.get_channel(1204602840165654589)
     await channel.send('Hello!')
@@ -44,17 +46,16 @@ def seconds_until_midnight():
     now = datetime.now()
     target = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     diff = (target - now).total_seconds()
-    print(f"{target} - {now} = {diff}")
     return diff
 
-@tasks.loop(seconds=60)
+@tasks.loop(seconds=1)
 async def called_once_a_day_at_midnight():
     message_channel = bot.get_channel(CHANNEL_ID)
     await message_channel.send(seconds_until_midnight())
     await asyncio.sleep(seconds_until_midnight())
     
     print(f"Got channel {message_channel}")
-    await message_channel.send("Your message here")
+    await message_channel.send("ITS MIDNIGHT")
 
 @called_once_a_day_at_midnight.before_loop
 async def before():
