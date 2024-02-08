@@ -3,22 +3,25 @@ from datetime import datetime, timedelta
 import os
 import asyncio
 import discord
+import birthdays
 from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+GUILD_ID = int(os.getenv("GUILD_ID"))
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
     called_once_a_day_at_midnight.start()
-    channel = bot.get_channel(1204602840165654589)
+    channel = bot.get_channel(CHANNEL_ID)
     await channel.send('Hello!')
 
 @bot.command()
@@ -39,8 +42,16 @@ async def secondsUntilMidnight(ctx):
 
 @bot.command()
 async def pingMe(ctx, member: discord.Member):
-    await ctx.send(member.mention)
+    await ctx.send(f'Happy birthday {member.mention}')
 
+@bot.command()
+async def birthday(ctx):
+    birthday = birthdays.getTodaysBirthdays()
+    guild = bot.get_guild(GUILD_ID)
+    guild.fetch_members()
+
+    for member in birthday:
+        await ctx.send(f'Happy birthday {guild.get_member_named(member).mention}, please wish {birthday[member]} a happy birthday!')
 
 def seconds_until_midnight():
     now = datetime.now()
