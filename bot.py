@@ -26,11 +26,7 @@ async def on_ready():
 
 @bot.command()
 async def isItMyBirthday(ctx):
-    await ctx.send("No")
-
-@bot.command()
-async def isItThisGuysBirthday(ctx, user:discord.User):
-    if user.name == "josephjiang123":
+    if birthdays.isItTheirBirthday(ctx.author.name):
         await ctx.send("Yes")
     else:
         await ctx.send("No")
@@ -41,8 +37,12 @@ async def secondsUntilMidnight(ctx):
     await ctx.send(seconds_until_midnight())
 
 @bot.command()
-async def pingMe(ctx, member: discord.Member):
-    await ctx.send(f'Happy birthday {member.mention}')
+async def insult(ctx, member: discord.Member):
+    if member.global_name == "Pidgeon":
+        await ctx.send(file=discord.File('snape.jpg'))
+    else:
+        await ctx.send(f'You are a smelly dog, {member.mention}')
+
 
 @bot.command()
 async def birthday(ctx):
@@ -51,7 +51,7 @@ async def birthday(ctx):
     guild.fetch_members()
 
     for member in birthday:
-        await ctx.send(f'Happy birthday {guild.get_member_named(member).mention}, please wish {birthday[member]} a happy birthday!')
+        await ctx.send(f'Happy birthday {guild.get_member_named(member).mention}!')
 
 def seconds_until_midnight():
     now = datetime.now()
@@ -64,14 +64,15 @@ async def called_once_a_day_at_midnight():
     message_channel = bot.get_channel(CHANNEL_ID)
     await message_channel.send(seconds_until_midnight())
     await asyncio.sleep(seconds_until_midnight())
-    
-    print(f"Got channel {message_channel}")
-    await message_channel.send("ITS MIDNIGHT")
+    birthday = birthdays.getTodaysBirthdays()
+    guild = bot.get_guild(GUILD_ID)
+    guild.fetch_members()
+
+    for member in birthday:
+        await ctx.send(f'Happy birthday {guild.get_member_named(member).mention}!')
 
 @called_once_a_day_at_midnight.before_loop
 async def before():
     await bot.wait_until_ready()
-    print("Finished waiting")
-
 
 bot.run(BOT_TOKEN)

@@ -8,7 +8,7 @@ def getTodaysBirthdays() -> dict:
         birthdays = csv.DictReader(csvfile, delimiter=',', quotechar='|')
         todays_birthdays = dict()
         for row in birthdays:
-            if monthToNum(row['Birth_Month']) == 3 and int(row['Birthdate']) == 20:
+            if monthToNum(row['Birth_Month']) == today.month and int(row['Birthdate']) == today.date:
                 todays_birthdays[row['Discord']] = row['First_name']
         if isItNinisBirthday() == True:
             todays_birthdays['niranjan'] = "Niranjan 'Nini'"
@@ -18,10 +18,19 @@ def getTodaysBirthdays() -> dict:
 def isItNinisBirthday() -> bool:
     return random.randint(1, 20) == 1
 
-def isItTheirBirthday(birthdays:dict , discord:str) -> bool:
-    if discord == "niranjan":
+def isItTheirBirthday(guy:str) -> bool:
+    today = datetime.now()
+    if guy == "niranjan":
         return True
-    return discord in birthdays
+    with open('birthdays.csv', newline='') as csvfile:
+        birthdays = csv.DictReader(csvfile, delimiter=',', quotechar='|')
+        for row in birthdays:
+            if row['Discord'] == guy:
+                if monthToNum(row['Birth_Month']) == today.month and int(row['Birthdate']) == today.date:
+                    return True
+                else:
+                    return False
+    return False
     
 def monthToNum(month:str):
     return {
