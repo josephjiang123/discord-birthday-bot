@@ -8,7 +8,7 @@ def getTodaysBirthdays() -> dict:
         birthdays = csv.DictReader(csvfile, delimiter=',', quotechar='|')
         todays_birthdays = dict()
         for row in birthdays:
-            if monthToNum(row['Birth_Month']) == today.month and int(row['Birthdate']) == today.date:
+            if monthToNum(row['Birth_Month']) == today.month and int(row['Birthdate']) == today.day:
                 todays_birthdays[row['Discord']] = row['First_name']
         if isItNinisBirthday() == True:
             todays_birthdays['niranjan'] = "Niranjan 'Nini'"

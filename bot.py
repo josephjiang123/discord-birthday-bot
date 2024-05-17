@@ -17,6 +17,10 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 GUILD_ID = int(os.getenv("GUILD_ID"))
+MAIN_CHANNEL = int(os.getenv("MAIN_CHANNEL_ID"))
+
+TEST_GUILD_ID = int(os.getenv("TEST_GUILD_ID"))
+TEST_CHANNEL_ID = int(os.getenv("TEST_CHANNEL_ID"))
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -47,9 +51,18 @@ async def insult(ctx, member: discord.Member):
         await ctx.send(f'{insult}, {member.mention}')
 
 @bot.command()
-async def love(ctx, member: discord.Member):
+async def love(ctx, mention: str):
     compliment = random.choice(util.compliments)
-    await ctx.send(f'{compliment}, {member.mention}')
+
+    if mention == "@everyone":
+        await ctx.send(f'@everyone {compliment}')
+    else:
+        # Attempt to convert the mention to a member object
+        try:
+            member = await commands.MemberConverter().convert(ctx, mention)
+            await ctx.send(f'{compliment}, {member.mention}')
+        except commands.MemberNotFound:
+            await ctx.send("Member not found. Please mention a valid member.")
 
 
 @bot.command()
@@ -69,7 +82,7 @@ def seconds_until_midnight():
 
 @tasks.loop(seconds=1)
 async def called_once_a_day_at_midnight():
-    message_channel = bot.get_channel(CHANNEL_ID)
+    message_channel = bot.get_channel(MAIN_CHANNEL)
     await asyncio.sleep(seconds_until_midnight())
     birthday = birthdays.getTodaysBirthdays()
     guild = bot.get_guild(GUILD_ID)

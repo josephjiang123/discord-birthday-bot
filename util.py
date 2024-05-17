@@ -6,5 +6,5 @@ compliments = ["Your life is EVERYTHING",
 
 insults = ["You are a smelly dog",
            "You are a smelly cat",
-           "Your mother was a hamster and your father smely of elderberries",
+           "Your mother was a hamster and your father smelt of elderberries",
            "I fart in your general direction"]
